@@ -228,19 +228,17 @@ def plotSignal():
             phase = 0
             temp_signal_df = signaldf.loc[tempdf.index]
             temp_signal_df = temp_signal_df.where(temp_signal_df['theta'] == theta[i]).dropna()
-            if theta[i] < last_phase:
-                # phase += 1
-                for j in range(len(last_signal_df)):
-                    last_signal_df.iloc[j]['phi'] = last_phase - theta[i]
+            for j in range(len(signaldf.loc[tempdf.index])):
+                if theta[i] < signaldf.loc[tempdf.index].iloc[j]['theta'] + signaldf.loc[tempdf.index].iloc[j]['phi']\
+                    and signaldf.loc[tempdf.index].iloc[j]['theta'] < theta[i]:
                 
-                temp_signal_df = temp_signal_df.append(last_signal_df)
-                temp_signal_df = temp_signal_df.sort_values(by=['phi'])
-                
-                # plotted.pop(last_signal_df.index[j])
+                    temp_signal_df = temp_signal_df.append(signaldf.loc[tempdf.index].iloc[j])
+                    temp_signal_df = temp_signal_df.sort_values(by=['theta'])
             
             for k in range(len(temp_signal_df)):
                 if temp_signal_df.index[k] in plotted:
-                    phase += 1
+                    if phase == plotted[temp_signal_df.index[k]]:
+                        phase += 1
                     continue
                 duration = theta[i]
                 ax.add_patch(
@@ -250,7 +248,7 @@ def plotSignal():
                         10, # height
                         color='g'))
                 
-                plotted[temp_signal_df.index[k]] = 1
+                plotted[temp_signal_df.index[k]] = phase
                 
                 ax.text(duration + 0.55 * temp_signal_df.iloc[k]['phi'], 5 + phase * 20, 
                         str(int(temp_signal_df.iloc[k]['phi'])), color='w', fontsize=12, horizontalalignment='center',
@@ -346,7 +344,7 @@ def plotSignal():
                 count += 1
                 
                 ax.autoscale_view(tight=None, scalex=True, scaley=True)
-                last_phase = theta[i] + min(temp_signal_df['phi'])
+                last_phase = theta[i] + max(temp_signal_df['phi'])
                 last_signal_df = temp_signal_df
         
         plt.rcParams['savefig.dpi'] = 400 #图片像素
