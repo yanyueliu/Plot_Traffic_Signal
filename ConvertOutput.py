@@ -211,7 +211,7 @@ def plotSignal():
         if Node.idcase[nd].type != 0:
             continue
         
-        tempdf = movedf.where(movedf['Corr_Node'] == nd).dropna().where(movedf['gdirect'] != 3).dropna()
+        tempdf = movedf.where(movedf['Corr_Node'] == nd).dropna(subset=['Corr_Node']).where(movedf['gdirect'] != 3).dropna(subset=['Corr_Node'])
         green_phase = {}
         
         theta = signaldf.loc[tempdf.index]['theta'].drop_duplicates().sort_values()
@@ -357,6 +357,6 @@ if __name__ == '__main__':
     random.seed(123)
     readNetwork()
     initMovement()
-    getRatio()
+    # getRatio()
     Movement.getAllMovement()
     plotSignal()
